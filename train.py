@@ -71,7 +71,7 @@ def main():
 
 
     # tf_model = TrafficLightNetModel((75, 75, 3), 4, 256)
-    tf_model = LPCModel((75, 75, 3), 4, 256)
+    tf_model = LPCModel((75, 75, 3), 10, 256)
     if args.model_path != None:
         tf_model.load_model(args.model_path)
 
