@@ -123,16 +123,20 @@ class TrafficLightNetModel():
     self.model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=lr),
                       loss=tf.keras.losses.BinaryCrossentropy(),
                       metrics=["accuracy"])
+
     checkpointer = tf.keras.callbacks.ModelCheckpoint(filepath=path_save,
                                                       verbose=verbose,
                                                       monitor="val_accuracy",
                                                       save_best_only=True)
+
     reduce_lr = tf.keras.callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.5,
-                              patience=3, min_lr=0.0001)
+                              patience=3, min_lr=0.00000001)
+                              
     callbacks = [tf.keras.callbacks.EarlyStopping(patience=5, monitor='val_loss'),
                  tf.keras.callbacks.TensorBoard(log_dir="logs"),
                  checkpointer,
                  reduce_lr]
+
     results = self.model.fit(ds_train, batch_size=batch_size, epochs=epochs, callbacks=callbacks, validation_data=ds_val)
     print("Finished training")
     return results
@@ -221,48 +225,24 @@ class LPCModel():
     img = tf.image.resize(img, size=input_size)
     return img
 
-
-  def old_predict(self, img, conf_thresh=[0.5, 0.5, 0.5], single_lb=False, verbose=0):
-    labels = []
-    img_pred = self.imageProcessing(img, (75, 75))
-    pred = self.model.predict(np.array([img_pred]), verbose=verbose)
-    if single_lb:
-      max_idx = tf.math.argmax(pred[0])
-      if max_idx==0:
-        labels = 'r'
-      elif max_idx==1:
-        labels = 'y'
-      elif max_idx==2:
-        labels = 'g'
-      else:
-        labels = 'n'
-    else:
-      if pred[0,0] >= conf_thresh[0]:
-        labels.append('r')
-      if pred[0,1] >= conf_thresh[1]:
-        labels.append('y')
-      if pred[0,2] >= conf_thresh[2]:
-        labels.append('g')
-      if pred[0,0] < conf_thresh[0] and pred[0,1] < conf_thresh[1] and pred[0,2] < conf_thresh[2]:
-        labels.append('n')
-    conf_scores = pred[0]
-    return labels, conf_scores
-
-
   def train_model(self, path_save, ds_train, ds_val, epochs, batch_size, lr=0.001, verbose=1):
     self.model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=lr),
-                      loss=tf.keras.losses.BinaryCrossentropy(),
+                      loss=tf.keras.losses.CategoricalCrossentropy(),
                       metrics=["accuracy"])
+
     checkpointer = tf.keras.callbacks.ModelCheckpoint(filepath=path_save,
                                                       verbose=verbose,
                                                       monitor="val_accuracy",
                                                       save_best_only=True)
-    reduce_lr = tf.keras.callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.5,
-                              patience=3, min_lr=0.0001)
+    
+    reduce_lr = tf.keras.callbacks.ReduceLROnPlateau(monitor='val_accuracy', factor=0.5,
+                              patience=3, min_lr=0.0000001)
+
     callbacks = [tf.keras.callbacks.EarlyStopping(patience=5, monitor='val_loss'),
                  tf.keras.callbacks.TensorBoard(log_dir="logs"),
                  checkpointer,
                  reduce_lr]
+
     results = self.model.fit(ds_train, batch_size=batch_size, epochs=epochs, callbacks=callbacks, validation_data=ds_val)
     print("Finished training")
     return results
