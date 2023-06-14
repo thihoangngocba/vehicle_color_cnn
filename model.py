@@ -6,7 +6,7 @@ from tensorflow.keras import layers
 
 class VCR_model():
   def __init__(self, input_shape, num_classes, size_se):
-    super(LPCModel, self).__init__()
+    super(VCR_model, self).__init__()
 
     self.input_shape = input_shape
     self.num_classes = num_classes
