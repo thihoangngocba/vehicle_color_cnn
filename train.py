@@ -6,7 +6,7 @@ import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
-from model import TrafficLightNetModel, LPCModel
+from model import VCR_model
 from utils import preprocessing_image, load_weights_transfer, save_dataloader_img
 from tensorflow.keras.callbacks import LearningRateScheduler
 from keras.callbacks import Callback, EarlyStopping, ReduceLROnPlateau
@@ -75,7 +75,7 @@ def main():
 
 
     # tf_model = TrafficLightNetModel((75, 75, 3), 4, 256)
-    tf_model = LPCModel((args.size, args.size, 3), 10, 256)
+    tf_model = VCR_model((args.size, args.size, 3), 10, 256)
     if args.model_path != None:
         tf_model.load_model(args.model_path)
 
