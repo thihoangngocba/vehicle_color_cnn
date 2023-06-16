@@ -92,7 +92,7 @@ class VCR_model():
     reduce_lr = tf.keras.callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.5,
                               patience=3, min_lr=0.0000001)
 
-    callbacks = [tf.keras.callbacks.EarlyStopping(patience=5, monitor='val_loss'),
+    callbacks = [tf.keras.callbacks.EarlyStopping(patience=10, monitor='val_loss'),
                  tf.keras.callbacks.TensorBoard(log_dir="logs"),
                  checkpointer,
                  reduce_lr]
